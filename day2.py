@@ -33,22 +33,32 @@ def parse_ranges(line: str) -> list[tuple[int, int]]:
     return ranges
 
 
-def is_double_repeat_id(n: int) -> bool:
+def is_repeated_pattern_id(n: int) -> bool:
+    """Return True if the number's digits are some pattern repeated at least twice."""
     s = str(n)
     length = len(s)
-    # Must be an even number of digits to be two equal halves.
-    if length % 2 != 0:
-        return False
 
-    half = length // 2
-    return s[:half] == s[half:]
+    # Try all possible pattern lengths up to half the string.
+    for pattern_len in range(1, length // 2 + 1):
+        if length % pattern_len != 0:
+            continue
+
+        repeat_count = length // pattern_len
+        if repeat_count < 2:
+            continue
+
+        chunk = s[:pattern_len]
+        if chunk * repeat_count == s:
+            return True
+
+    return False
 
 
 def sum_invalid_ids(ranges: list[tuple[int, int]]) -> int:
     total = 0
     for start, end in ranges:
         for value in range(start, end + 1):
-            if is_double_repeat_id(value):
+            if is_repeated_pattern_id(value):
                 total += value
     return total
 
